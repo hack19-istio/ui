@@ -3,14 +3,19 @@
   <mat-card class="sound-card">
     <div *ngFor="let soundName of soundList">
       <fa
-        *ngIf="sounds[soundName].play"
+        *ngIf="sounds[soundName].play && !sounds[soundName].offline"
         name="volume-up"
         class="sound-icon pulse"
       ></fa>
       <fa
-        *ngIf="!sounds[soundName].play"
+        *ngIf="!sounds[soundName].play && !sounds[soundName].offline"
         name="volume-off"
         class="sound-icon sound-icon-off"
+      ></fa>
+      <fa
+        *ngIf="sounds[soundName].offline"
+        name="volume-off"
+        class="sound-icon sound-icon-offline"
       ></fa>
       <mat-slide-toggle (change)="playLoop(soundName)" class="toggleElem">
         {{ soundName }}

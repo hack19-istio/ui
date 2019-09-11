@@ -24,6 +24,10 @@ h1 {
   color: gray;
 }
 
+.sound-icon-offline {
+  color: red;
+}
+
 @keyframes pulse {
   0% {
     color: rgba(0, 161, 48, 0.4);

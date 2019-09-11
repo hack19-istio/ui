@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { Howl, Howler } from "howler";
-import { MatSlideToggleModule } from "@angular/material/slide-toggle";
+import { HttpClient } from "@angular/common/http";
 
 @Component({
   selector: "app-root",
@@ -10,7 +10,18 @@ import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 export class AppComponent implements OnInit {
   title = "hack19-istio-ui";
   sounds = {};
-  soundList = ["Rhodes", "Bass", "HH", "KickSnare", "Pad", "Piano"];
+  soundList = [
+    "rhodes1",
+    "bass1",
+    "hh1",
+    "kickSnare1",
+    "pad1",
+    "piano1",
+    "piano2",
+    "asd"
+  ];
+
+  constructor(private http: HttpClient) {}
 
   ngOnInit() {
     this.soundList.forEach(soundName => {
@@ -20,14 +31,43 @@ export class AppComponent implements OnInit {
           format: ["mp3"],
           loop: true
         }),
-        play: false
+        play: false,
+        offline: false
       };
     });
   }
 
   playLoop(name) {
+    if (this.sounds[name].play) {
+      if (this.sounds[name].offline) {
+        this.sounds[name].play = !this.sounds[name].play;
+        this.sounds[name].offline = false;
+      } else {
+        this.activateSound(name);
+      }
+    } else {
+      this.http
+        .get(`http://localhost:3000/instrument-file?name=${name}`, {
+          responseType: "blob"
+        })
+        .subscribe(
+          data => {
+            console.log(data);
+            this.activateSound(name);
+          },
+          error => {
+            console.log(error);
+            this.sounds[name].play = !this.sounds[name].play;
+            this.sounds[name].offline = true;
+          }
+        );
+    }
+  }
+
+  private activateSound(name) {
     this.stopAllSounds();
     this.sounds[name].play = !this.sounds[name].play;
+    this.sounds[name].offline = false;
     this.playAllActivatedSounds();
   }
 
@@ -41,6 +81,7 @@ export class AppComponent implements OnInit {
     Object.keys(this.sounds).forEach(key => {
       if (this.sounds[key].play) {
         this.sounds[key].sound.play();
+        this.sounds[key].sound.on("end", () => console.log(key + " finished"));
       }
     });
   }
