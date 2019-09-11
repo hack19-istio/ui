@@ -1,6 +1,20 @@
-<mat-slide-toggle
-  *ngFor="let soundName of soundList"
-  (change)="playLoop(soundName)"
->
-  {{ soundName }}
-</mat-slide-toggle>
+<div class="wrapper">
+  <h1>Hackathon 2019: Istio</h1>
+  <mat-card class="sound-card">
+    <div *ngFor="let soundName of soundList">
+      <fa
+        *ngIf="sounds[soundName].play"
+        name="volume-up"
+        class="sound-icon pulse"
+      ></fa>
+      <fa
+        *ngIf="!sounds[soundName].play"
+        name="volume-off"
+        class="sound-icon sound-icon-off"
+      ></fa>
+      <mat-slide-toggle (change)="playLoop(soundName)" class="toggleElem">
+        {{ soundName }}
+      </mat-slide-toggle>
+    </div>
+  </mat-card>
+</div>

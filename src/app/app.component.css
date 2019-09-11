@@ -1,0 +1,37 @@
+h1 {
+  font-family: "Quicksand", sans-serif;
+}
+.wrapper {
+  width: 80%;
+  margin: auto;
+}
+
+.toggleElem {
+  margin-bottom: 20px;
+}
+
+.pulse {
+  width: 22px;
+  height: 22px;
+  animation: pulse 2s infinite;
+}
+
+.sound-icon {
+  margin-right: 10px;
+}
+
+.sound-icon-off {
+  color: gray;
+}
+
+@keyframes pulse {
+  0% {
+    color: rgba(0, 161, 48, 0.4);
+  }
+  50% {
+    color: rgba(0, 161, 48, 1);
+  }
+  100% {
+    color: rgba(0, 161, 48, 0.4);
+  }
+}
