@@ -1,6 +1,7 @@
 <div class="wrapper">
   <h1>Hackathon 2019: Istio</h1>
   <mat-card class="sound-card">
+    <canvas id="oscilloscope"></canvas>
     <div *ngFor="let soundName of soundList">
       <fa
         *ngIf="sounds[soundName].play && !sounds[soundName].offline"
