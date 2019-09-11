@@ -38,37 +38,48 @@ export class AppComponent implements OnInit {
   }
 
   playLoop(name) {
-    if (this.sounds[name].play) {
-      if (this.sounds[name].offline) {
-        this.sounds[name].play = !this.sounds[name].play;
-        this.sounds[name].offline = false;
-      } else {
-        this.activateSound(name);
-      }
-    } else {
-      this.http
-        .get(`http://localhost:3000/instrument-file?name=${name}`, {
-          responseType: "blob"
-        })
-        .subscribe(
-          data => {
-            console.log(data);
-            this.activateSound(name);
-          },
-          error => {
-            console.log(error);
-            this.sounds[name].play = !this.sounds[name].play;
-            this.sounds[name].offline = true;
-          }
-        );
-    }
+    this.soundToggledOn(name)
+      ? this.activateSound(name)
+      : this.deactivateSound(name);
   }
 
   private activateSound(name) {
+    const onSuccess = () => {
+      this.togglePlay(name);
+      this.restartAllSounds(name);
+    };
+    const onError = () => {
+      this.sounds[name].play = !this.sounds[name].play;
+      this.sounds[name].offline = true;
+    };
+    this.http
+      .get(`http://localhost:3000/instrument-file?name=${name}`, {
+        responseType: "blob"
+      })
+      .subscribe(onSuccess, onError);
+  }
+
+  private deactivateSound(name) {
+    if (!this.sounds[name].offline) {
+      this.togglePlay(name);
+      this.restartAllSounds(name);
+    } else {
+      this.togglePlay(name);
+    }
+  }
+
+  private soundToggledOn(name) {
+    return !this.sounds[name].play;
+  }
+
+  private restartAllSounds(name) {
     this.stopAllSounds();
-    this.sounds[name].play = !this.sounds[name].play;
-    this.sounds[name].offline = false;
     this.playAllActivatedSounds();
+  }
+
+  private togglePlay(name) {
+    this.sounds[name].offline = false;
+    this.sounds[name].play = !this.sounds[name].play;
   }
 
   private stopAllSounds() {
