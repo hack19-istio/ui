@@ -10,24 +10,19 @@ import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 export class AppComponent implements OnInit {
   title = "hack19-istio-ui";
   sounds = {};
+  soundList = ["Rhodes", "Bass", "HH", "KickSnare", "Pad", "Piano"];
 
   ngOnInit() {
-    this.sounds["communicator"] = {
-      sound: new Howl({
-        src: ["http://localhost:3000/"],
-        format: ["mp3"],
-        loop: true
-      }),
-      play: false
-    };
-    this.sounds["wololo"] = {
-      sound: new Howl({
-        src: ["http://localhost:3000/wololo"],
-        format: ["mp3"],
-        loop: true
-      }),
-      play: false
-    };
+    this.soundList.forEach(soundName => {
+      this.sounds[soundName] = {
+        sound: new Howl({
+          src: [`http://localhost:3000/instrument-file?name=${soundName}`],
+          format: ["mp3"],
+          loop: true
+        }),
+        play: false
+      };
+    });
   }
 
   playLoop(name) {
