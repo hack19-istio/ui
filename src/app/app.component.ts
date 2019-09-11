@@ -18,7 +18,7 @@ export class AppComponent implements OnInit {
         format: ["mp3"],
         loop: true
       }),
-      loop: false
+      play: false
     };
     this.sounds["wololo"] = {
       sound: new Howl({
@@ -26,14 +26,27 @@ export class AppComponent implements OnInit {
         format: ["mp3"],
         loop: true
       }),
-      loop: false
+      play: false
     };
   }
 
   playLoop(name) {
-    this.sounds[name].loop
-      ? this.sounds[name].sound.stop()
-      : this.sounds[name].sound.play();
-    this.sounds[name].loop = !this.sounds[name].loop;
+    this.stopAllSounds();
+    this.sounds[name].play = !this.sounds[name].play;
+    this.playAllActivatedSounds();
+  }
+
+  private stopAllSounds() {
+    Object.keys(this.sounds).forEach(key => {
+      this.sounds[key].sound.stop();
+    });
+  }
+
+  private playAllActivatedSounds() {
+    Object.keys(this.sounds).forEach(key => {
+      if (this.sounds[key].play) {
+        this.sounds[key].sound.play();
+      }
+    });
   }
 }
