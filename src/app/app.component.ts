@@ -171,7 +171,7 @@ export class AppComponent implements OnInit {
       canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
       canvasCtx.lineWidth = 2;
-      canvasCtx.strokeStyle = "rgb(0, 0, 0)";
+      canvasCtx.strokeStyle = "rgb(255,4,129)";
 
       canvasCtx.beginPath();
 
