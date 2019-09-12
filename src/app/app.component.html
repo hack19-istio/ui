@@ -34,13 +34,18 @@
       ></fa>
       <mat-slide-toggle (change)="playLoop(instrumentName)" class="toggleElem">
         {{ instrumentName }}
+        <span *ngIf="isInstrumentPlaying(instrumentName)"
+          >({{ getSoundForInstrument(instrumentName) }})</span
+        >
       </mat-slide-toggle>
       <mat-slider
         min="0"
         max="1"
         step="0.1"
         value="0.8"
-        (change)="changeSoundVolume(soundName, $event)"
+        (change)="
+          changeSoundVolume(getSoundForInstrument(instrumentName), $event)
+        "
       ></mat-slider>
     </div>
   </mat-card>

@@ -64,7 +64,9 @@ export class AppComponent implements OnInit {
   }
 
   changeSoundVolume(soundName, event) {
-    this.sounds[soundName].sound.volume(event.value);
+    if (soundName) {
+      this.sounds[soundName].sound.volume(event.value);
+    }
   }
 
   isInstrumentPlaying(instrumentName) {
@@ -81,8 +83,8 @@ export class AppComponent implements OnInit {
   }
 
   private activateInstrument(instrumentName) {
-    const onSuccess = () => {
-      this.currentInstrumentSounds[instrumentName] = instrumentName + "1";
+    const onSuccess = data => {
+      this.currentInstrumentSounds[instrumentName] = data.name;
       this.togglePlay(this.getSoundForInstrument(instrumentName));
       this.restartAllSounds();
     };
@@ -94,7 +96,7 @@ export class AppComponent implements OnInit {
       }
     };
     this.http
-      .get(`http://${clusterHost}/instrument?name=${instrumentName}1`)
+      .get(`http://${clusterHost}/instrument?name=${instrumentName}`)
       .subscribe(onSuccess, onError);
   }
 
