@@ -2,6 +2,11 @@ import { Component, OnInit } from "@angular/core";
 import { Howl, Howler } from "howler";
 import { HttpClient } from "@angular/common/http";
 
+// istio-k8s-cluster-1
+// const clusterHost = '35.188.57.69';
+// istio-k8s-cluster-2
+const clusterHost = "35.226.139.104";
+
 @Component({
   selector: "app-root",
   templateUrl: "./app.component.html",
@@ -10,7 +15,6 @@ import { HttpClient } from "@angular/common/http";
 export class AppComponent implements OnInit {
   title = "hack19-istio-ui";
   sounds = {};
-  serviceAddress = "35.188.57.69";
   soundList = [
     "rhodes1",
     "bass1",
@@ -28,9 +32,7 @@ export class AppComponent implements OnInit {
     this.soundList.forEach(soundName => {
       this.sounds[soundName] = {
         sound: new Howl({
-          src: [
-            `http://${this.serviceAddress}/instrument-file?name=${soundName}`
-          ],
+          src: [`http://${clusterHost}/instrument-file?name=${soundName}`],
           format: ["mp3"],
           loop: true
         }),
@@ -57,7 +59,7 @@ export class AppComponent implements OnInit {
       this.sounds[name].offline = true;
     };
     this.http
-      .get(`http://${this.serviceAddress}/instrument?name=${name}`, {
+      .get(`http://${clusterHost}/instrument?name=${name}`, {
         responseType: "blob"
       })
       .subscribe(onSuccess, onError);
