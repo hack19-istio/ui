@@ -26,29 +26,13 @@ export class AppComponent implements OnInit {
     "piano2"
   ];
   instrumentList = ["rhodes", "bass", "hh", "kicksnare", "pad", "piano"];
-  instrumentOffline = {
-    rhodes: false,
-    bass: false,
-    hh: false,
-    kicksnare: false,
-    pad: false,
-    piano: false
-  };
-  instrumentPlaying = {
-    rhodes: false,
-    bass: false,
-    hh: false,
-    kicksnare: false,
-    pad: false,
-    piano: false
-  };
-  currentInstrumentSounds = {
-    rhodes: null,
-    bass: null,
-    hh: null,
-    kicksnare: null,
-    pad: null,
-    piano: null
+  instrumentStates = {
+    rhodes: { offline: false, playing: false, sound: null },
+    bass: { offline: false, playing: false, sound: null },
+    hh: { offline: false, playing: false, sound: null },
+    kicksnare: { offline: false, playing: false, sound: null },
+    pad: { offline: false, playing: false, sound: null },
+    piano: { offline: false, playing: false, sound: null }
   };
 
   constructor(private http: HttpClient) {}
@@ -83,28 +67,30 @@ export class AppComponent implements OnInit {
   }
 
   isInstrumentPlaying(instrumentName) {
-    return this.instrumentPlaying[instrumentName];
+    return this.instrumentStates[instrumentName].play;
   }
   isInstrumentOffline(instrumentName) {
-    return this.instrumentOffline[instrumentName];
+    return this.instrumentStates[instrumentName].offline;
   }
 
   private getSoundForInstrument(instrumentName) {
-    return this.currentInstrumentSounds[instrumentName];
+    return this.instrumentStates[instrumentName].sound;
   }
 
   private activateInstrument(instrumentName) {
-    console.log("activate");
-    this.instrumentPlaying[instrumentName] = true;
     const onSuccess = data => {
-      this.currentInstrumentSounds[instrumentName] = data.name;
-      this.instrumentOffline[instrumentName] = false;
-      this.instrumentPlaying[instrumentName] = true;
+      this.instrumentStates[instrumentName].play = true;
+      this.instrumentStates[instrumentName] = {
+        ...this.instrumentStates[instrumentName],
+        sound: data.name,
+        offline: false,
+        play: true
+      };
       this.restartAllSounds();
     };
     const onError = () => {
-      this.instrumentOffline[instrumentName] = true;
-      this.isInstrumentPlaying[instrumentName] = false;
+      this.instrumentStates[instrumentName].offline = true;
+      this.instrumentStates[instrumentName].play = false;
     };
     this.http
       .get(`http://${clusterHost}/instrument?name=${instrumentName}`)
@@ -114,11 +100,11 @@ export class AppComponent implements OnInit {
   private deactivateSound(instrumentName) {
     console.log("deactivate");
     if (!this.isInstrumentOffline(instrumentName)) {
-      this.instrumentPlaying[instrumentName] = false;
+      this.instrumentStates[instrumentName].play = false;
       this.restartAllSounds();
     } else {
-      this.instrumentOffline[instrumentName] = false;
-      this.instrumentPlaying[instrumentName] = false;
+      this.instrumentStates[instrumentName].offline = false;
+      this.instrumentStates[instrumentName].play = false;
     }
   }
 
@@ -135,13 +121,11 @@ export class AppComponent implements OnInit {
 
   private playAllActivatedInstruments() {
     this.instrumentList.forEach(instrumentName => {
-      console.log("instrumentName", instrumentName);
       if (
-        this.instrumentPlaying[instrumentName] &&
-        !this.instrumentOffline[instrumentName]
+        this.isInstrumentPlaying(instrumentName) &&
+        !this.instrumentStates[instrumentName].offline
       ) {
         const soundName = this.getSoundForInstrument(instrumentName);
-        console.log("soundName", soundName);
         if (soundName) {
           this.sounds[soundName].sound.play();
         }
