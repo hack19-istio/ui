@@ -5,6 +5,7 @@ import { AngularFontAwesomeModule } from "angular-font-awesome";
 import { MatCardModule } from "@angular/material/card";
 import { MatDividerModule } from "@angular/material/divider";
 import { HttpClientModule } from "@angular/common/http";
+import { MatSliderModule } from '@angular/material/slider';
 
 import { AppComponent } from "./app.component";
 
@@ -16,7 +17,8 @@ import { AppComponent } from "./app.component";
     AngularFontAwesomeModule,
     MatCardModule,
     MatDividerModule,
-    HttpClientModule
+    HttpClientModule,
+    MatSliderModule
   ],
   providers: [],
   bootstrap: [AppComponent]

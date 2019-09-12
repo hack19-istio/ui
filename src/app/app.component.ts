@@ -49,6 +49,14 @@ export class AppComponent implements OnInit {
       : this.deactivateSound(name);
   }
 
+  changeMasterVolume(event){
+    Howler.volume(event.value);
+  }
+
+  changeSoundVolume(soundName, event){
+    this.sounds[soundName].sound.volume(event.value);
+  }
+
   private activateSound(name) {
     const onSuccess = () => {
       this.togglePlay(name);
