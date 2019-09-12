@@ -14,7 +14,8 @@
       <fa
         *ngIf="
           isInstrumentPlaying(instrumentName) &&
-          !isInstrumentOffline(instrumentName)
+          !isInstrumentOffline(instrumentName) &&
+          getSoundForInstrument(instrumentName)
         "
         name="volume-up"
         class="sound-icon pulse"
@@ -32,9 +33,17 @@
         name="volume-off"
         class="sound-icon sound-icon-offline"
       ></fa>
-      <mat-slide-toggle (change)="playLoop(instrumentName)" class="toggleElem">
+      <mat-slide-toggle
+        (change)="playLoop(instrumentName, $event)"
+        class="toggleElem"
+      >
         {{ instrumentName }}
-        <span *ngIf="isInstrumentPlaying(instrumentName)"
+        <span
+          *ngIf="
+            isInstrumentPlaying(instrumentName) &&
+            !isInstrumentOffline(instrumentName) &&
+            getSoundForInstrument(instrumentName)
+          "
           >({{ getSoundForInstrument(instrumentName) }})</span
         >
       </mat-slide-toggle>
