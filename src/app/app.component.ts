@@ -10,6 +10,7 @@ import { HttpClient } from "@angular/common/http";
 export class AppComponent implements OnInit {
   title = "hack19-istio-ui";
   sounds = {};
+  serviceAddress = "35.188.57.69";
   soundList = [
     "rhodes1",
     "bass1",
@@ -27,7 +28,9 @@ export class AppComponent implements OnInit {
     this.soundList.forEach(soundName => {
       this.sounds[soundName] = {
         sound: new Howl({
-          src: [`http://35.188.57.69/instrument-file?name=${soundName}`],
+          src: [
+            `http://${this.serviceAddress}/instrument-file?name=${soundName}`
+          ],
           format: ["mp3"],
           loop: true
         }),
@@ -54,13 +57,14 @@ export class AppComponent implements OnInit {
       this.sounds[name].offline = true;
     };
     this.http
-      .get(`http://35.188.57.69/instrument?name=${name}`, {
+      .get(`http://${this.serviceAddress}/instrument?name=${name}`, {
         responseType: "blob"
       })
       .subscribe(onSuccess, onError);
   }
 
   private deactivateSound(name) {
+    console.log("deactivate", name);
     if (!this.sounds[name].offline) {
       this.togglePlay(name);
       this.restartAllSounds(name);
@@ -91,7 +95,7 @@ export class AppComponent implements OnInit {
 
   private playAllActivatedSounds() {
     Object.keys(this.sounds).forEach(key => {
-      if (this.sounds[key].play) {
+      if (this.sounds[key].play && !this.sounds[key].offline) {
         this.sounds[key].sound.play();
 
         this.sounds[key].sound.on("end", () => console.log(key + " finished"));
