@@ -25,6 +25,31 @@ export class AppComponent implements OnInit {
     "piano1",
     "piano2"
   ];
+  instrumentList = ["rhodes", "bass", "hh", "kicksnare", "pad", "piano"];
+  instrumentOffline = {
+    rhodes: false,
+    bass: false,
+    hh: false,
+    kicksnare: false,
+    pad: false,
+    piano: false
+  };
+  instrumentPlaying = {
+    rhodes: false,
+    bass: false,
+    hh: false,
+    kicksnare: false,
+    pad: false,
+    piano: false
+  };
+  currentInstrumentSounds = {
+    rhodes: null,
+    bass: null,
+    hh: null,
+    kicksnare: null,
+    pad: null,
+    piano: null
+  };
 
   constructor(private http: HttpClient) {}
 
@@ -35,66 +60,71 @@ export class AppComponent implements OnInit {
           src: [`http://${clusterHost}/instrument-file?name=${soundName}`],
           format: ["mp3"],
           loop: true
-        }),
-        play: false,
-        offline: false
+        })
       };
     });
     this.ctxMagic();
   }
 
-  playLoop(name) {
-    this.soundToggledOn(name)
-      ? this.activateSound(name)
-      : this.deactivateSound(name);
+  playLoop(instrumentName, $event) {
+    $event.checked
+      ? this.activateInstrument(instrumentName)
+      : this.deactivateSound(instrumentName);
   }
 
-  changeMasterVolume(event){
+  changeMasterVolume(event) {
     Howler.volume(event.value);
   }
 
-  changeSoundVolume(soundName, event){
-    this.sounds[soundName].sound.volume(event.value);
-  }
-
-  private activateSound(name) {
-    const onSuccess = () => {
-      this.togglePlay(name);
-      this.restartAllSounds(name);
-    };
-    const onError = () => {
-      this.sounds[name].play = !this.sounds[name].play;
-      this.sounds[name].offline = true;
-    };
-    this.http
-      .get(`http://${clusterHost}/instrument?name=${name}`, {
-        responseType: "blob"
-      })
-      .subscribe(onSuccess, onError);
-  }
-
-  private deactivateSound(name) {
-    console.log("deactivate", name);
-    if (!this.sounds[name].offline) {
-      this.togglePlay(name);
-      this.restartAllSounds(name);
-    } else {
-      this.togglePlay(name);
+  changeSoundVolume(soundName, event) {
+    if (soundName) {
+      this.sounds[soundName].sound.volume(event.value);
     }
   }
 
-  private soundToggledOn(name) {
-    return !this.sounds[name].play;
+  isInstrumentPlaying(instrumentName) {
+    return this.instrumentPlaying[instrumentName];
+  }
+  isInstrumentOffline(instrumentName) {
+    return this.instrumentOffline[instrumentName];
   }
 
-  private restartAllSounds(name) {
+  private getSoundForInstrument(instrumentName) {
+    return this.currentInstrumentSounds[instrumentName];
+  }
+
+  private activateInstrument(instrumentName) {
+    console.log("activate");
+    this.instrumentPlaying[instrumentName] = true;
+    const onSuccess = data => {
+      this.currentInstrumentSounds[instrumentName] = data.name;
+      this.instrumentOffline[instrumentName] = false;
+      this.instrumentPlaying[instrumentName] = true;
+      this.restartAllSounds();
+    };
+    const onError = () => {
+      this.instrumentOffline[instrumentName] = true;
+      this.isInstrumentPlaying[instrumentName] = false;
+    };
+    this.http
+      .get(`http://${clusterHost}/instrument?name=${instrumentName}`)
+      .subscribe(onSuccess, onError);
+  }
+
+  private deactivateSound(instrumentName) {
+    console.log("deactivate");
+    if (!this.isInstrumentOffline(instrumentName)) {
+      this.instrumentPlaying[instrumentName] = false;
+      this.restartAllSounds();
+    } else {
+      this.instrumentOffline[instrumentName] = false;
+      this.instrumentPlaying[instrumentName] = false;
+    }
+  }
+
+  private restartAllSounds() {
     this.stopAllSounds();
-    this.playAllActivatedSounds();
-  }
-
-  private togglePlay(name) {
-    this.sounds[name].offline = false;
-    this.sounds[name].play = !this.sounds[name].play;
+    this.playAllActivatedInstruments();
   }
 
   private stopAllSounds() {
@@ -103,12 +133,18 @@ export class AppComponent implements OnInit {
     });
   }
 
-  private playAllActivatedSounds() {
-    Object.keys(this.sounds).forEach(key => {
-      if (this.sounds[key].play && !this.sounds[key].offline) {
-        this.sounds[key].sound.play();
-
-        this.sounds[key].sound.on("end", () => console.log(key + " finished"));
+  private playAllActivatedInstruments() {
+    this.instrumentList.forEach(instrumentName => {
+      console.log("instrumentName", instrumentName);
+      if (
+        this.instrumentPlaying[instrumentName] &&
+        !this.instrumentOffline[instrumentName]
+      ) {
+        const soundName = this.getSoundForInstrument(instrumentName);
+        console.log("soundName", soundName);
+        if (soundName) {
+          this.sounds[soundName].sound.play();
+        }
       }
     });
   }

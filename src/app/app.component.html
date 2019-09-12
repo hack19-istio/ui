@@ -2,27 +2,60 @@
   <h1>Hackathon 2019: Istio</h1>
   <mat-card class="sound-card">
     <canvas id="oscilloscope"></canvas>
-    Master volume: <mat-slider min="0" max="1" step="0.1" value="0.8" (change)="changeMasterVolume($event)"></mat-slider>
-    <div *ngFor="let soundName of soundList">
+    Master volume:
+    <mat-slider
+      min="0"
+      max="1"
+      step="0.1"
+      value="0.8"
+      (change)="changeMasterVolume($event)"
+    ></mat-slider>
+    <div *ngFor="let instrumentName of instrumentList">
       <fa
-        *ngIf="sounds[soundName].play && !sounds[soundName].offline"
+        *ngIf="
+          isInstrumentPlaying(instrumentName) &&
+          !isInstrumentOffline(instrumentName) &&
+          getSoundForInstrument(instrumentName)
+        "
         name="volume-up"
         class="sound-icon pulse"
       ></fa>
       <fa
-        *ngIf="!sounds[soundName].play && !sounds[soundName].offline"
+        *ngIf="
+          !isInstrumentPlaying(instrumentName) &&
+          !isInstrumentOffline(instrumentName)
+        "
         name="volume-off"
         class="sound-icon sound-icon-off"
       ></fa>
       <fa
-        *ngIf="sounds[soundName].offline"
+        *ngIf="isInstrumentOffline(instrumentName)"
         name="volume-off"
         class="sound-icon sound-icon-offline"
       ></fa>
-      <mat-slide-toggle (change)="playLoop(soundName)" class="toggleElem">
-        {{ soundName }}
+      <mat-slide-toggle
+        (change)="playLoop(instrumentName, $event)"
+        class="toggleElem"
+      >
+        {{ instrumentName }}
+        <span
+          *ngIf="
+            isInstrumentPlaying(instrumentName) &&
+            !isInstrumentOffline(instrumentName) &&
+            getSoundForInstrument(instrumentName)
+          "
+          >({{ getSoundForInstrument(instrumentName) }})</span
+        >
       </mat-slide-toggle>
-      <mat-slider min="0" max="1" step="0.1" value="0.8" (change)="changeSoundVolume(soundName, $event)"></mat-slider>
-</div>
+      <mat-slider
+        min="0"
+        max="1"
+        step="0.1"
+        value="0.8"
+        (change)="
+          changeSoundVolume(getSoundForInstrument(instrumentName), $event)
+        "
+      ></mat-slider>
+    </div>
   </mat-card>
 </div>
