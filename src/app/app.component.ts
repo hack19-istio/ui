@@ -5,7 +5,7 @@ import { HttpClient } from "@angular/common/http";
 // istio-k8s-cluster-1
 // const clusterHost = '35.188.57.69';
 // istio-k8s-cluster-2
-const clusterHost = '35.226.139.104';
+const clusterHost = "35.226.139.104";
 
 @Component({
   selector: "app-root",
@@ -66,6 +66,7 @@ export class AppComponent implements OnInit {
   }
 
   private deactivateSound(name) {
+    console.log("deactivate", name);
     if (!this.sounds[name].offline) {
       this.togglePlay(name);
       this.restartAllSounds(name);
@@ -96,7 +97,7 @@ export class AppComponent implements OnInit {
 
   private playAllActivatedSounds() {
     Object.keys(this.sounds).forEach(key => {
-      if (this.sounds[key].play) {
+      if (this.sounds[key].play && !this.sounds[key].offline) {
         this.sounds[key].sound.play();
 
         this.sounds[key].sound.on("end", () => console.log(key + " finished"));
@@ -128,8 +129,8 @@ export class AppComponent implements OnInit {
       console.dir(dataArray);
     }, 3000);
 
-    var canvas = document.getElementById("oscilloscope") as any;
-    var canvasCtx = (canvas as any).getContext("2d");
+    var canvas = <any>document.getElementById("oscilloscope");
+    var canvasCtx = canvas.getContext("2d");
 
     function draw() {
       requestAnimationFrame(draw);
