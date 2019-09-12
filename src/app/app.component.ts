@@ -5,7 +5,9 @@ import { HttpClient } from "@angular/common/http";
 // istio-k8s-cluster-1
 // const clusterHost = '35.188.57.69';
 // istio-k8s-cluster-2
-const clusterHost = "35.226.139.104";
+// const clusterHost = "35.226.139.104";
+// istio-k8s-cluster-3
+const clusterHost = "35.238.230.226";
 
 @Component({
   selector: "app-root",
