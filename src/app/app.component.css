@@ -18,14 +18,23 @@ canvas {
   margin: auto;
 }
 
+.row {
+  padding: 5px;
+}
+
+.red-row {
+  animation: pulsered 2s infinite;
+}
+
+.spinner {
+  display: inline-block;
+  margin-right: 5px;
+}
+
 .visual {
   box-shadow: 0 0px 2px -1px rgba(0, 0, 0, 0.3), 0 0px 0px 0 rgba(0, 0, 0, 0.14),
     0 0px 4px 0 rgba(0, 0, 0, 0.12);
   padding: 0;
-}
-
-.toggleElem {
-  margin-bottom: 20px;
 }
 
 .pulse {
@@ -46,6 +55,10 @@ canvas {
   color: red;
 }
 
+.mat-slider {
+  padding: 0;
+}
+
 @keyframes pulse {
   0% {
     color: rgba(0, 161, 48, 0.4);
@@ -55,5 +68,16 @@ canvas {
   }
   100% {
     color: rgba(0, 161, 48, 0.4);
+  }
+}
+@keyframes pulsered {
+  0% {
+    background-color: rgba(255, 104, 104, 0.2);
+  }
+  50% {
+    background-color: rgba(255, 104, 104, 0.4);
+  }
+  100% {
+    background-color: rgba(255, 104, 104, 0.2);
   }
 }

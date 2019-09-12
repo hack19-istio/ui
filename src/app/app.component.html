@@ -15,7 +15,10 @@
       value="0.8"
       (change)="changeMasterVolume($event)"
     ></mat-slider>
-    <div *ngFor="let instrumentName of instrumentList">
+    <div
+      *ngFor="let instrumentName of instrumentList"
+      [ngClass]="{ 'red-row': isInstrumentOffline(instrumentName), row: true }"
+    >
       <fa
         *ngIf="
           isInstrumentPlaying(instrumentName) &&
@@ -25,10 +28,15 @@
         name="volume-up"
         class="sound-icon pulse"
       ></fa>
+
+      <div class="spinner" *ngIf="isInstrumentPending(instrumentName)">
+        <mat-spinner diameter="16" strokeWidth="2"></mat-spinner>
+      </div>
       <fa
         *ngIf="
           !isInstrumentPlaying(instrumentName) &&
-          !isInstrumentOffline(instrumentName)
+          !isInstrumentOffline(instrumentName) &&
+          !isInstrumentPending(instrumentName)
         "
         name="volume-off"
         class="sound-icon sound-icon-off"

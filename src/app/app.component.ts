@@ -29,12 +29,12 @@ export class AppComponent implements OnInit {
   ];
   instrumentList = ["rhodes", "bass", "hh", "kicksnare", "pad", "piano"];
   instrumentStates = {
-    rhodes: { offline: false, playing: false, sound: null },
-    bass: { offline: false, playing: false, sound: null },
-    hh: { offline: false, playing: false, sound: null },
-    kicksnare: { offline: false, playing: false, sound: null },
-    pad: { offline: false, playing: false, sound: null },
-    piano: { offline: false, playing: false, sound: null }
+    rhodes: { offline: false, playing: false, sound: null, pending: false },
+    bass: { offline: false, playing: false, sound: null, pending: false },
+    hh: { offline: false, playing: false, sound: null, pending: false },
+    kicksnare: { offline: false, playing: false, sound: null, pending: false },
+    pad: { offline: false, playing: false, sound: null, pending: false },
+    piano: { offline: false, playing: false, sound: null, pending: false }
   };
 
   constructor(private http: HttpClient) {}
@@ -75,12 +75,18 @@ export class AppComponent implements OnInit {
     return this.instrumentStates[instrumentName].offline;
   }
 
+  isInstrumentPending(instrumentName) {
+    return this.instrumentStates[instrumentName].pending;
+  }
+
   private getSoundForInstrument(instrumentName) {
     return this.instrumentStates[instrumentName].sound;
   }
 
   private activateInstrument(instrumentName) {
+    this.instrumentStates[instrumentName].pending = true;
     const onSuccess = data => {
+      this.instrumentStates[instrumentName].pending = false;
       this.instrumentStates[instrumentName].play = true;
       this.instrumentStates[instrumentName] = {
         ...this.instrumentStates[instrumentName],
@@ -91,6 +97,7 @@ export class AppComponent implements OnInit {
       this.restartAllSounds();
     };
     const onError = () => {
+      this.instrumentStates[instrumentName].pending = false;
       this.instrumentStates[instrumentName].offline = true;
       this.instrumentStates[instrumentName].play = false;
     };

@@ -5,7 +5,8 @@ import { AngularFontAwesomeModule } from "angular-font-awesome";
 import { MatCardModule } from "@angular/material/card";
 import { MatDividerModule } from "@angular/material/divider";
 import { HttpClientModule } from "@angular/common/http";
-import { MatSliderModule } from '@angular/material/slider';
+import { MatSliderModule } from "@angular/material/slider";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 import { AppComponent } from "./app.component";
 
@@ -18,7 +19,8 @@ import { AppComponent } from "./app.component";
     MatCardModule,
     MatDividerModule,
     HttpClientModule,
-    MatSliderModule
+    MatSliderModule,
+    MatProgressSpinnerModule
   ],
   providers: [],
   bootstrap: [AppComponent]
