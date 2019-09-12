@@ -123,7 +123,7 @@ export class AppComponent implements OnInit {
       console.dir(dataArray);
     }, 3000);
 
-    var canvas = document.getElementById("oscilloscope");
+    var canvas = <any>document.getElementById("oscilloscope");
     var canvasCtx = canvas.getContext("2d");
 
     function draw() {
