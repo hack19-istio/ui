@@ -2,20 +2,15 @@ import { Component, OnInit } from "@angular/core";
 import { Howl, Howler } from "howler";
 import { HttpClient } from "@angular/common/http";
 
-// istio-k8s-cluster-1
-// const clusterHost = '35.188.57.69';
-// istio-k8s-cluster-2
-// const clusterHost = "35.226.139.104";
-// istio-k8s-cluster-3
-const clusterHost = "35.238.230.226";
-
+//const clusterHost = window.location.protocol + '//'+  window.location.host;
+const clusterHost = 'http://104.197.115.72';
 @Component({
   selector: "app-root",
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.css"]
 })
 export class AppComponent implements OnInit {
-  title = "hack19-istio-ui";
+  title = "DJ Istio";
   sounds = {};
   soundList = [
     "rhodes1",
@@ -29,12 +24,12 @@ export class AppComponent implements OnInit {
   ];
   instrumentList = ["rhodes", "bass", "hh", "kicksnare", "pad", "piano"];
   instrumentStates = {
-    rhodes: { offline: false, playing: false, sound: null, pending: false },
-    bass: { offline: false, playing: false, sound: null, pending: false },
-    hh: { offline: false, playing: false, sound: null, pending: false },
-    kicksnare: { offline: false, playing: false, sound: null, pending: false },
-    pad: { offline: false, playing: false, sound: null, pending: false },
-    piano: { offline: false, playing: false, sound: null, pending: false }
+    rhodes: { offline: false, playing: false, sound: null, pending: false, statusCode: null, errorMsg: null },
+    bass: { offline: false, playing: false, sound: null, pending: false, statusCode: null, errorMsg: null },
+    hh: { offline: false, playing: false, sound: null, pending: false, statusCode: null, errorMsg: null },
+    kicksnare: { offline: false, playing: false, sound: null, pending: false, statusCode: null, errorMsg: null },
+    pad: { offline: false, playing: false, sound: null, pending: false, statusCode: null, errorMsg: null },
+    piano: { offline: false, playing: false, sound: null, pending: false, statusCode: null, errorMsg: null }
   };
 
   constructor(private http: HttpClient) {}
@@ -43,7 +38,7 @@ export class AppComponent implements OnInit {
     this.soundList.forEach(soundName => {
       this.sounds[soundName] = {
         sound: new Howl({
-          src: [`http://${clusterHost}/instrument-file?name=${soundName}`],
+          src: [`${clusterHost}/instrument-file?name=${soundName}`],
           format: ["mp3"],
           loop: true
         })
@@ -83,6 +78,11 @@ export class AppComponent implements OnInit {
     return this.instrumentStates[instrumentName].sound;
   }
 
+  private getErrorForInstrument(instrumentName) {
+    return "Status Code: " + this.instrumentStates[instrumentName].statusCode +
+    ", Error Message: " + this.instrumentStates[instrumentName].errorMsg;
+  }
+
   private activateInstrument(instrumentName) {
     this.instrumentStates[instrumentName].pending = true;
     const onSuccess = data => {
@@ -92,17 +92,21 @@ export class AppComponent implements OnInit {
         ...this.instrumentStates[instrumentName],
         sound: data.name,
         offline: false,
-        play: true
+        play: true,
+        statusCode: 200,
+        errorMsg: null
       };
       this.restartAllSounds();
     };
-    const onError = () => {
+    const onError = error => {
       this.instrumentStates[instrumentName].pending = false;
       this.instrumentStates[instrumentName].offline = true;
       this.instrumentStates[instrumentName].play = false;
+      this.instrumentStates[instrumentName].statusCode = error.status;
+      this.instrumentStates[instrumentName].errorMsg = JSON.stringify(error.error);
     };
     this.http
-      .get(`http://${clusterHost}/instrument?name=${instrumentName}`)
+      .get(`${clusterHost}/instrument?name=${instrumentName}`)
       .subscribe(onSuccess, onError);
   }
 
@@ -163,7 +167,7 @@ export class AppComponent implements OnInit {
     // Display array on time each 3 sec (just to debug)
     setInterval(function() {
       analyser.getByteTimeDomainData(dataArray);
-      console.dir(dataArray);
+      //console.dir(dataArray);
     }, 3000);
 
     var canvas = <any>document.getElementById("oscilloscope");

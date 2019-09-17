@@ -1,7 +1,6 @@
 <div class="wrapper">
   <h1>
-    <img src="assets/istio-logo.svg" class="logo" />Hackathon 2019: DJ Service
-    Mesh
+    <img src="assets/istio-logo.svg" class="logo" />DJ Istio
   </h1>
   <mat-card class="sound-card">
     <mat-card class="sound-card visual">
@@ -28,7 +27,6 @@
         name="volume-up"
         class="sound-icon pulse"
       ></fa>
-
       <div class="spinner" *ngIf="isInstrumentPending(instrumentName)">
         <mat-spinner diameter="16" strokeWidth="2"></mat-spinner>
       </div>
@@ -69,6 +67,9 @@
           changeSoundVolume(getSoundForInstrument(instrumentName), $event)
         "
       ></mat-slider>
+      <div *ngIf="
+        isInstrumentOffline(instrumentName)
+      ">{{ getErrorForInstrument(instrumentName) }}</div>
     </div>
   </mat-card>
 </div>
